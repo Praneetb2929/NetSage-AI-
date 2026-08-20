@@ -1,5 +1,3 @@
-
-Readme · MD
 # 🌐 NetSage AI
  
 AI-assisted network troubleshooting system that combines LLM-based diagnosis, deterministic network rule checking, and human review.
