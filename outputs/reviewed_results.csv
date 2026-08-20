@@ -1,0 +1,485 @@
+case_id,symptom,concept,severity,rule_checker_results,ai_diagnosis,review_decision,review_comment
+1,PC cannot reach another device in the same VLAN,VLAN,High,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": false, ""message"": ""Port Fa0/1 is assigned to VLAN 20, but VLAN 10 is required."", ""evidence"": [""Connected port: Fa0/1"", ""Actual VLAN: 20"", ""Required VLAN: 10""]}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No ACL evidence detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""PC1 access port is assigned to the wrong VLAN"",
+  ""confidence"": 0.95,
+  ""osi_layer"": ""Layer 2"",
+  ""evidence"": [
+    ""show vlan brief shows Fa0/2 in VLAN 10 and Fa0/1 in VLAN 20"",
+    ""PC1 is connected to Fa0/1"",
+    ""Rule‑checker vlan check failed: port Fa0/1 is assigned to VLAN 20, but VLAN 10 is required""
+  ],
+  ""next_command"": ""show interfaces Fa0/1 switchport"",
+  ""fix_steps"": [
+    ""Configure Fa0/1 as an access port in VLAN 10 (e.g., switchport access vlan 10)"",
+    ""Verify the port VLAN assignment with the next_command"",
+    ""Test connectivity from PC1 to another device in VLAN 10""
+  ]
+}",Approved,
+2,PC in VLAN 20 cannot communicate with VLAN 30,VLAN,High,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No ACL evidence detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""VLAN 30 is not allowed on the trunk between the switch and the router, preventing inter‑VLAN routing."",
+  ""confidence"": 0.95,
+  ""osi_layer"": ""Layer 2"",
+  ""evidence"": [
+    ""\""show interfaces trunk\"" output lists allowed VLANs as 10,20 and explicitly shows VLAN 30 is missing.""
+  ],
+  ""next_command"": ""show vlan id 30"",
+  ""fix_steps"": [
+    ""Verify that VLAN 30 exists on the switch with `show vlan id 30`. If it does not exist, create it with `vlan 30`."",
+    ""Add VLAN 30 to the trunk allowed list: `switchport trunk allowed vlan add 30` on the trunk interface."",
+    ""Verify the trunk configuration again with `show interfaces trunk` to confirm VLAN 30 is now allowed."",
+    ""Test inter‑VLAN connectivity from a PC in VLAN 20 to a device in VLAN 30.""
+  ]
+}",Approved,
+3,New VLAN users have no connectivity,VLAN,High,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No ACL evidence detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""VLAN 40 is not defined on the access switch, so new users cannot be assigned to it"",
+  ""confidence"": 0.95,
+  ""osi_layer"": ""Layer 2"",
+  ""evidence"": [
+    ""\""show vlan brief\"" output lists VLAN 40 as \""not present\""""
+  ],
+  ""next_command"": ""show vlan id 40"",
+  ""fix_steps"": [
+    ""Enter configuration mode: configure terminal"",
+    ""Create the VLAN: vlan 40"",
+    ""Optionally assign a name: name VLAN40"",
+    ""Exit configuration mode"",
+    ""Verify the VLAN exists and is active: show vlan brief"",
+    ""Assign the appropriate ports to VLAN 40 (e.g., switchport access vlan 40)"",
+    ""Test connectivity from a new user device""
+  ]
+}",Approved,
+4,Inter-switch communication fails for one VLAN,VLAN,High,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": false, ""message"": ""Required VLAN 30 is not allowed on the trunk."", ""evidence"": [""Required VLAN: 30"", ""Allowed VLANs: 10, 20""]}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No ACL evidence detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""VLAN 30 is not permitted on the trunk between SW1 and SW2, preventing inter‑switch communication for that VLAN."",
+  ""confidence"": 0.95,
+  ""osi_layer"": ""Layer 2"",
+  ""evidence"": [
+    ""show interfaces trunk output lists Allowed VLANs: 10,20"",
+    ""show interfaces trunk output lists Native VLAN: 99"",
+    ""Required VLAN: 30"",
+    ""Deterministic rule‑checker trunk_vlan check failed with evidence \""Required VLAN: 30\"" and \""Allowed VLANs: 10, 20\""""
+  ],
+  ""next_command"": ""show interface Gi0/1 switchport"",
+  ""fix_steps"": [
+    ""Verify that VLAN 30 exists on both switches (use 'show vlan' or 'vlan 30' command)."",
+    ""Add VLAN 30 to the trunk allowed list on both SW1 and SW2: 'switchport trunk allowed vlan add 30'."",
+    ""Confirm the trunk configuration with 'show interface Gi0/1 switchport' and ensure VLAN 30 appears in the allowed list."",
+    ""Test inter‑switch connectivity for VLAN 30 (e.g., ping a device on that VLAN).""
+  ]
+}",Approved,
+5,PC receives connectivity only after moving to another port,VLAN,Medium,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No VLAN assignment mismatch detected."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No ACL evidence detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""PC is connected to a switch port configured for the wrong VLAN"",
+  ""confidence"": 0.95,
+  ""osi_layer"": ""Layer 2"",
+  ""evidence"": [
+    ""show interfaces switchport shows Fa0/5 is access VLAN 10"",
+    ""show interfaces switchport shows Fa0/6 is access VLAN 20"",
+    ""PC is physically connected to Fa0/5"",
+    ""PC should use VLAN 20""
+  ],
+  ""next_command"": ""show vlan brief"",
+  ""fix_steps"": [
+    ""Reconfigure Fa0/5 as an access port in VLAN 20 (e.g., `interface Fa0/5\n switchport access vlan 20`)"",
+    ""Alternatively, move the PC to Fa0/6 which is already in VLAN 20"",
+    ""Verify the port VLAN assignment with `show interfaces Fa0/5 switchport`"",
+    ""Test connectivity from the PC again""
+  ]
+}",Approved,
+6,PC can communicate locally but cannot reach remote network,Gateway,High,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No ACL evidence detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{""error"": ""AI failed to return a valid diagnosis for Case 6 after 3 attempts.""}",Rejected,AI returned no diagnosis or actionable troubleshooting information.
+7,Multiple PCs cannot access networks outside their subnet,Gateway,High,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": false, ""message"": ""Gateway mismatch: gateway is outside the host's subnet."", ""evidence"": [""Host IP: 192.168.10.25/24"", ""Gateway: 192.168.11.1"", ""Host network: 192.168.10.0/24""]}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No ACL evidence detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""PC default gateway is configured outside the PC's local subnet"",
+  ""confidence"": 0.97,
+  ""osi_layer"": ""Layer 3"",
+  ""evidence"": [
+    ""PC IP address: 192.168.10.25/24"",
+    ""PC configured gateway: 192.168.11.1"",
+    ""Rule‑checker gateway check failed with evidence: Host network 192.168.10.0/24"",
+    ""Symptom: PCs cannot reach networks outside their subnet""
+  ],
+  ""next_command"": ""show ip interface brief"",
+  ""fix_steps"": [
+    ""On each affected PC, run `ipconfig /all` (Windows) or `ifconfig`/`ip addr` (Linux) to confirm the current default gateway and subnet mask."",
+    ""Change the default gateway to the correct router address (e.g., 192.168.10.1) via the PC’s network settings or DHCP scope."",
+    ""Verify that the PC can ping the new gateway and then test connectivity to an external network."",
+    ""If the gateway is set via DHCP, check the DHCP server’s scope to ensure it offers the correct default gateway for the 192.168.10.0/24 subnet.""
+  ]
+}",Approved,
+8,PC can ping another local host but not the router,Gateway,High,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No ACL evidence detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""PC is configured with a default gateway (10.0.2.1) that is not in the same subnet as the router interface (10.0.1.1/24), preventing communication to the router."",
+  ""confidence"": 0.95,
+  ""osi_layer"": ""Layer 3"",
+  ""evidence"": [
+    ""PC IP address is 10.0.1.20/24"",
+    ""PC default gateway is set to 10.0.2.1"",
+    ""Router G0/0 IP address is 10.0.1.1/24""
+  ],
+  ""next_command"": ""show ip interface brief"",
+  ""fix_steps"": [
+    ""On the PC, change the default gateway to 10.0.1.1 (the router’s IP)."",
+    ""Verify that the PC’s subnet mask matches the router’s subnet (/24)."",
+    ""Ping the router again to confirm connectivity."",
+    ""If the ping succeeds, test other local hosts to ensure overall network operation.""
+  ]
+}",Approved,
+9,One workstation cannot reach the internet while others can,Gateway,Medium,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No ACL evidence detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{""error"": ""AI failed to return a valid diagnosis for Case 9 after 3 attempts.""}",Rejected,AI returned no diagnosis or actionable troubleshooting information.
+10,PC does not receive an IP address automatically,DHCP,High,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": false, ""message"": ""No DHCP binding was found for the affected client."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No ACL evidence detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""The DHCP pool configured for the subnet has no available addresses to lease."",
+  ""confidence"": 0.9,
+  ""osi_layer"": ""Layer 3"",
+  ""evidence"": [
+    ""\""show ip dhcp binding\"" returned no bindings"",
+    ""\""show ip dhcp pool\"" reported 0 available addresses"",
+    ""Deterministic rule‑checker dhcp check failed (no binding found)""
+  ],
+  ""next_command"": ""show ip dhcp pool <pool-name> | include Address|Subnet"",
+  ""fix_steps"": [
+    ""Verify the DHCP pool configuration with the command above to confirm the address range and subnet mask."",
+    ""If the pool is too small, extend the address range or create an additional pool for the subnet."",
+    ""If the pool is correctly sized, check for any address reservations or exclusions that may be consuming all addresses."",
+    ""Release any unused leases with \""clear ip dhcp binding\"" or by restarting the DHCP service."",
+    ""After adjusting the pool, test the PC again to ensure it receives an IP address.""
+  ]
+}",Approved,
+11,PC receives an APIPA address,DHCP,High,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": false, ""message"": ""Client has an APIPA address, indicating DHCP address assignment failed."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No ACL evidence detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""DHCP server is not reachable or not offering a lease to the PC"",
+  ""confidence"": 0.8,
+  ""osi_layer"": ""Layer 3"",
+  ""evidence"": [
+    ""PC has an APIPA address (169.254.12.20)"",
+    ""show ip dhcp binding shows no binding for the PC"",
+    ""Deterministic rule-checker dhcp check failed, indicating DHCP assignment failed""
+  ],
+  ""next_command"": ""ping <DHCP_server_IP>"",
+  ""fix_steps"": [
+    ""Verify the DHCP server is powered on and its interface is up."",
+    ""Ping the DHCP server IP from the PC to confirm connectivity."",
+    ""Check the DHCP scope configuration on the server to ensure it includes the PC's MAC address and has available addresses."",
+    ""Ensure no ACLs or firewall rules are blocking DHCP traffic (port 67/68)."",
+    ""If the server is reachable but still not assigning, restart the DHCP service or renew the lease on the PC.""
+  ]
+}",Approved,
+12,Only some clients receive DHCP addresses,DHCP,Medium,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No ACL evidence detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""DHCP address pool is nearly exhausted, leaving insufficient addresses for all clients"",
+  ""confidence"": 0.9,
+  ""osi_layer"": ""Layer 3"",
+  ""evidence"": [
+    ""show ip dhcp pool reports 98 addresses in use out of 100 maximum, leaving only 2 available"",
+    ""Only some clients are receiving DHCP addresses""
+  ],
+  ""next_command"": ""show ip dhcp binding"",
+  ""fix_steps"": [
+    ""Increase the size of the existing DHCP pool or create an additional pool to accommodate all clients"",
+    ""Consider reducing the lease time if the network has many short‑lived clients"",
+    ""Verify that all clients are on the correct VLAN/subnet to ensure they are requesting addresses from the intended pool"",
+    ""After adjusting the pool, monitor the DHCP binding table to confirm all clients receive addresses""
+  ]
+}",Approved,
+13,DHCP clients receive an address but cannot reach the gateway,DHCP,High,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No ACL evidence detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""DHCP server is providing an incorrect default gateway address to clients"",
+  ""confidence"": 0.95,
+  ""osi_layer"": ""Layer 3"",
+  ""evidence"": [
+    ""DHCP lease shows gateway 192.168.51.1"",
+    ""Router LAN interface is 192.168.50.1"",
+    ""Clients receive an IP in 192.168.50.0/24 but cannot reach the gateway""
+  ],
+  ""next_command"": ""show ip dhcp pool"",
+  ""fix_steps"": [
+    ""Verify the DHCP pool configuration with 'show ip dhcp pool' to confirm the default-router setting."",
+    ""Edit the DHCP pool to set the default-router to 192.168.50.1."",
+    ""Save the configuration and restart the DHCP service if necessary."",
+    ""Have clients release and renew their DHCP lease (or reboot) to obtain the corrected gateway."",
+    ""Test connectivity to the gateway and beyond to confirm resolution.""
+  ]
+}",Approved,
+14,Users can ping an IP address but cannot open a website by name,DNS,Medium,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": false, ""message"": ""DNS server request is timing out."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No ACL evidence detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""DNS resolution is failing due to an unreachable or misconfigured DNS server"",
+  ""confidence"": 0.92,
+  ""osi_layer"": ""Layer 7"",
+  ""evidence"": [
+    ""Ping to 8.8.8.8 succeeded, indicating IP connectivity"",
+    ""nslookup example.com timed out, showing DNS query failure"",
+    ""Deterministic rule checker DNS check failed with message \""DNS server request is timing out\""""
+  ],
+  ""next_command"": ""show ip name-server"",
+  ""fix_steps"": [
+    ""Verify the DNS server IP address configured on the client or router with `show ip name-server`"",
+    ""Ping the configured DNS server IP to confirm reachability"",
+    ""Check any ACLs or firewall rules that might block DNS traffic (UDP/53)"",
+    ""If the DNS server is unreachable, correct the IP address or routing to the DNS server"",
+    ""After corrections, run `nslookup example.com` again to confirm resolution""
+  ]
+}",Approved,
+15,DNS lookup returns an incorrect server address,DNS,Medium,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": false, ""message"": ""DNS returned NXDOMAIN for the requested name."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No ACL evidence detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""The network is distributing the wrong DNS server address (192.168.1.53) to clients instead of the intended DNS server (192.168.1.10), causing NXDOMAIN responses."",
+  ""confidence"": 0.9,
+  ""osi_layer"": ""Layer 7"",
+  ""evidence"": [
+    ""nslookup shows the server used is 192.168.1.53"",
+    ""nslookup returns NXDOMAIN for internal.example"",
+    ""Expected DNS server should be 192.168.1.10"",
+    ""Rule‑checker DNS check failed""
+  ],
+  ""next_command"": ""show run | include ip name-server"",
+  ""fix_steps"": [
+    ""Log into the router or DHCP server that hands out DNS information."",
+    ""Verify the current DNS server configuration with the command above."",
+    ""Replace or add the correct DNS server address: `ip name-server 192.168.1.10`."",
+    ""Remove or disable the incorrect DNS server entry (192.168.1.53)."",
+    ""Save the configuration and verify clients receive the new DNS server via DHCP or static config."",
+    ""Test name resolution",Needs Correction,"Correct root cause, but AI response is truncated and the fix_steps/JSON output is incomplete."
+16,Only internal names fail to resolve,DNS,Medium,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": false, ""message"": ""DNS server returned SERVFAIL."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No ACL evidence detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""Internal DNS server is not resolving names, likely due to a misconfigured or missing zone for fileserver.corp"",
+  ""confidence"": 0.8,
+  ""osi_layer"": ""Layer 7"",
+  ""evidence"": [
+    ""nslookup fileserver.corp returned SERVFAIL from server 192.168.1.10"",
+    ""Deterministic rule checker DNS check failed with SERVFAIL""
+  ],
+  ""next_command"": ""dig @192.168.1.10 fileserver.corp"",
+  ""fix_steps"": [
+    ""Log into the DNS server at 192.168.1.10 and verify that the zone files for fileserver.corp exist and are correctly configured."",
+    ""Check the DNS server logs for errors related to the fileserver.corp zone."",
+    ""Ensure that the DNS service is running and that any ACLs or firewall rules allow queries from internal hosts."",
+    ""If the zone is missing or corrupted, recreate or restore it from backup and reload the DNS service."",
+    ""After making changes, test resolution again with nslookup or dig from an internal host.""
+  ]
+}",Approved,
+17,Router cannot reach a remote subnet,Routing,High,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": false, ""message"": ""Required route is missing from the routing table."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No ACL evidence detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""R1 lacks a route to the remote subnet 10.20.0.0/24, preventing packet forwarding to R2."",
+  ""confidence"": 0.9,
+  ""osi_layer"": ""Layer 3"",
+  ""evidence"": [
+    ""show ip route output shows no entry for 10.20.0.0/24"",
+    ""Deterministic rule‑checker routing check failed, indicating a missing route""
+  ],
+  ""next_command"": ""show ip interface brief"",
+  ""fix_steps"": [
+    ""Identify the IP address of the interface on R1 that connects to R2 using the output of the next command."",
+    ""Configure a static route on R1: `ip route 10.20.0.0 255.255.255.0 <R2‑interface‑IP>` (or enable the appropriate dynamic routing protocol)."",
+    ""Verify the new route appears in `show ip route`."",
+    ""Test connectivity from R1 to a host in 10.20.0.0/24 to confirm the issue is resolved.""
+  ]
+}",Approved,
+18,One remote network is unreachable but other networks work,Routing,High,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": false, ""message"": ""Evidence indicates that a required route is missing."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No ACL evidence detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""Missing static route for network 10.40.0.0/24 on R1"",
+  ""confidence"": 0.9,
+  ""osi_layer"": ""Layer 3"",
+  ""evidence"": [
+    ""show ip route output shows 10.20.0.0/24 and 10.30.0.0/24 via 10.10.0.2"",
+    ""10.40.0.0/24 is not present in the routing table"",
+    ""Deterministic rule-checker routing check failed, indicating a required route is missing""
+  ],
+  ""next_command"": ""show ip route 10.40.0.0/24"",
+  ""fix_steps"": [
+    ""Determine the correct next-hop IP or exit interface for 10.40.0.0/24"",
+    ""Configure the missing static route: ip route 10.40.0.0 255.255.255.0 <next-hop>"",
+    ""Verify the route appears in the routing table with 'show ip route 10.40.0.0/24'"",
+    ""Test connectivity to the 10.40.0.0/24 network (e.g., ping a host in that subnet)""
+  ]
+}",Approved,
+19,OSPF neighbors are not forming,Routing,High,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": false, ""message"": ""OSPF neighbors are not forming because the configured areas differ."", ""evidence"": [""Detected OSPF areas: 0 and 1""]}, {""check"": ""acl"", ""passed"": true, ""message"": ""No ACL evidence detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""OSPF adjacency fails because the two routers are configured for different OSPF areas on the shared interface."",
+  ""confidence"": 0.95,
+  ""osi_layer"": ""Layer 3"",
+  ""evidence"": [
+    ""\""show ip ospf neighbor\"" reports no neighbors"",
+    ""\""show ip interface brief\"" shows G0/1 is up/up"",
+    ""\""R1 OSPF area: 0\"""",
+    ""\""R2 OSPF area: 1\"""",
+    ""\""routing\"" rule‑checker evidence: Detected OSPF areas 0 and 1""
+  ],
+  ""next_command"": ""show ip ospf interface G0/1"",
+  ""fix_steps"": [
+    ""Verify the OSPF area configured on each router for interface G0/1 (use the next command)."",
+    ""Reconfigure one router so that both interfaces belong to the same OSPF area (e.g., change R2 to area 0 or R1 to area 1)."",
+    ""Reload the OSPF process or restart the interface if necessary."",
+    ""Run \""show ip ospf neighbor\"" again to confirm that an adjacency is formed.""
+  ]
+}",Approved,
+20,Traffic takes an unexpected path,Routing,Medium,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No ACL evidence detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""A static route to 10.50.0.0/24 with a lower administrative distance is overriding the OSPF route, causing traffic to take an unexpected path."",
+  ""confidence"": 0.85,
+  ""osi_layer"": ""Layer 3"",
+  ""evidence"": [
+    ""show ip route 10.50.0.0 displays a static route via 10.0.0.2"",
+    ""show ip route 10.50.0.0 also shows an OSPF route via 10.0.0.3""
+  ],
+  ""next_command"": ""show ip route 10.50.0.0"",
+  ""fix_steps"": [
+    ""Verify the administrative distance of the static route (it will be 1 by default)."",
+    ""Decide whether the static route is required; if not, delete it with `no ip route 10.50.0.0 255.255.255.0 10.0.0.2`."",
+    ""If the static route must remain, adjust its administrative distance to be higher than OSPF (e.g., `ip route 10.50.0.0 255.255.255.0 10.0.0.2 distance 120`)."",
+    ""Re‑run `show ip route 10.50.0.0` to confirm the OSPF route is now preferred."",
+    ""Test traffic to ensure it follows the expected path.""
+  ]
+}",Approved,
+21,Router interface is up but connected network is missing from routing table,Routing,High,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No ACL evidence detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""Incorrect subnet mask configured on interface G0/2, causing the router to install a connected route for a different network (e.g., 192.168.0.0/16) instead of 192.168.100.0/24."",
+  ""confidence"": 0.8,
+  ""osi_layer"": ""Layer 3"",
+  ""evidence"": [
+    ""show ip interface brief shows G0/2 with IP 192.168.100.1 and status up/up"",
+    ""show ip route does not display 192.168.100.0/24"",
+    ""rule‑checker indicates no interface‑down or duplicate‑IP issues""
+  ],
+  ""next_command"": ""show running-config interface GigabitEthernet0/2"",
+  ""fix_steps"": [
+    ""Verify the subnet mask on G0/2; it should be 255.255.255.0 (/24)."",
+    ""If the mask is incorrect, reconfigure the interface with the correct mask: `interface GigabitEthernet0/2` then `ip address 192.168.100.1 255.255.255.0`."",
+    ""Reload the interface or verify the connected route appears with `show ip route 192.168.100.0`."",
+    ""Test connectivity from a host in the 192.168.100.0/24 network.""
+  ]
+}",Needs Correction,Root cause is plausible but not sufficiently supported by the provided evidence. The actual subnet mask on G0/2 must be verified before concluding that it is incorrect.
+22,Users can reach the gateway but cannot reach a protected server,ACL,High,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": false, ""message"": ""ACL evidence contains a deny rule that may block the required traffic."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""ACL 101 is denying traffic from the client VLAN (10.10.10.0/24) to the protected server (10.20.20.10)."",
+  ""confidence"": 0.85,
+  ""osi_layer"": ""Layer 3/4"",
+  ""evidence"": [
+    ""show access-lists shows Extended ACL 101 with rule \""10.10.10.0/24 -> 10.20.20.10 DENY\"""",
+    ""Implicit deny present after the explicit deny rule"",
+    ""Deterministic rule‑checker flagged the ACL check as failed""
+  ],
+  ""next_command"": ""show ip interface brief"",
+  ""fix_steps"": [
+    ""Identify the interface that connects the client VLAN to the router."",
+    ""Run \""show ip interface <interface>\"" to confirm ACL 101 is applied inbound/outbound on that interface."",
+    ""If the ACL is applied in the wrong direction or on the wrong interface, re‑apply it correctly."",
+    ""Modify ACL 101 to allow traffic from 10.10.10.0/24 to 10.20.20.10 (e.g., add a permit rule before the deny or remove the deny)."",
+    ""Verify connectivity from a client to the server after the change.""
+  ]
+}",Approved,
+23,Only HTTP traffic is blocked while ping works,ACL,High,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": false, ""message"": ""ACL evidence contains a deny rule that may block the required traffic."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""An ACL on the router is explicitly denying HTTP traffic to the web server (10.20.20.10) while allowing ICMP, causing HTTP to be blocked."",
+  ""confidence"": 0.95,
+  ""osi_layer"": ""Layer 4"",
+  ""evidence"": [
+    ""show access-lists output contains \""DENY tcp any host 10.20.20.10 eq 80\"""",
+    ""ICMP traffic is permitted, ping works"",
+    ""Rule‑checker flagged the ACL as a potential blocker""
+  ],
+  ""next_command"": ""show ip interface <interface-name> | include ACL"",
+  ""fix_steps"": [
+    ""Identify the interface(s) on which the ACL is applied (e.g., the interface connected to the client network)."",
+    ""If the ACL is applied inbound on the wrong interface, remove or modify the deny rule: either delete the rule or change it to allow HTTP to the server."",
+    ""If the ACL is intended but should allow HTTP, add an explicit permit rule before the deny or adjust the order."",
+    ""Verify the change by re‑testing HTTP connectivity and ping.""
+  ]
+}",Approved,
+24,Guest users cannot access the internet,ACL,High,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No explicit ACL deny detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""An outbound ACL on the edge router is denying traffic from the Guest VLAN (192.168.50.0/24)."",
+  ""confidence"": 0.9,
+  ""osi_layer"": ""Layer 3/4"",
+  ""evidence"": [
+    ""show access-lists output indicates that the Guest subnet 192.168.50.0/24 is denied by an outbound ACL""
+  ],
+  ""next_command"": ""show ip interface <interface-name> | include access"",
+  ""fix_steps"": [
+    ""Identify the outbound interface on the edge router that carries Guest VLAN traffic."",
+    ""Review the ACL applied to that interface with the command above."",
+    ""Modify the ACL to permit 192.168.50.0/24 to the desired destination (or move the permit statement before the deny)."",
+    ""Reload or reapply the ACL if necessary."",
+    ""Verify connectivity from a Guest device to the Internet.""
+  ]
+}",Needs Correction,"The root cause is plausible, but the provided evidence does not clearly show an ACL deny. The rule checker reports no explicit ACL deny, while the AI claims one exists. Verify the actual ACL output and its interface/direction before concluding that ACL is the root cause."
+25,Internal PC cannot access the internet,NAT,High,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No ACL evidence detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": false, ""message"": ""No NAT translations were found."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""NAT configuration is missing for the internal 192.168.10.0/24 network"",
+  ""confidence"": 0.9,
+  ""osi_layer"": ""Layer 3"",
+  ""evidence"": [
+    ""\""show ip nat translations\"" returned no translations"",
+    ""\""show running-config\"" contains no NAT rule for 192.168.10.0/24"",
+    ""Deterministic rule‑checker nat check failed (no NAT translations found)""
+  ],
+  ""next_command"": ""show running-config | section nat"",
+  ""fix_steps"": [
+    ""Identify the inside and outside interfaces and configure them with \""ip nat inside\"" and \""ip nat outside\"" respectively."",
+    ""Create an ACL that permits the internal network (e.g., \""access-list 1 permit 192.168.10.0 0.0.0.255\"")."",
+    ""Add a NAT rule such as \""ip nat inside source list 1 interface <outside‑interface> overload\"" to translate the internal addresses."",
+    ""Verify the configuration with \""show ip nat inside source list 1\"" and confirm that translations appear."",
+    ""Test connectivity from the internal PC to the Internet to confirm the issue is resolved.""
+  ]
+}",Approved,
+26,Some users can access the internet but others cannot,NAT,High,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No explicit ACL deny detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": false, ""message"": ""Traffic from the affected subnet is not being translated."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""NAT ACL does not include the 192.168.20.0/24 subnet, so traffic from that subnet is not being translated to the external interface."",
+  ""confidence"": 0.95,
+  ""osi_layer"": ""Layer 3"",
+  ""evidence"": [
+    ""show ip nat translations shows 192.168.10.20 translated but 192.168.20.20 not translated"",
+    ""NAT ACL matches only 192.168.10.0/24"",
+    ""Deterministic rule-checker nat check failed, indicating traffic from the affected subnet is not being translated""
+  ],
+  ""next_command"": ""show ip nat inside source list"",
+  ""fix_steps"": [
+    ""Identify the ACL used for NAT (e.g., ACL 101) and add the 192.168.20.0/24 network to it."",
+    ""Apply the updated ACL to the NAT inside source command if not already applied."",
+    ""Verify that new translations appear for 192.168.20.x hosts using 'show ip nat translations'."",
+    ""Test connectivity from a host in the 192.168.20.0/24 subnet to the internet.""
+  ]
+}",Approved,
+27,Port forwarding to an internal web server fails,NAT,Medium,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No ACL evidence detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": false, ""message"": ""Required static NAT/port-forwarding mapping is missing."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""Missing static NAT/port-forwarding rule for TCP port 80"",
+  ""confidence"": 0.92,
+  ""osi_layer"": ""Layer 3/4"",
+  ""evidence"": [
+    ""\""show ip nat translations\"" output indicates no static mapping for TCP 80"",
+    ""Deterministic rule-checker nat check failed with message \""Required static NAT/port-forwarding mapping is missing.\""""
+  ],
+  ""next_command"": ""show run | section nat"",
+  ""fix_steps"": [
+    ""Identify the inside and outside interfaces (e.g., GigabitEthernet0/0 as outside, GigabitEthernet0/1 as inside)."",
+    ""Configure a static NAT/port-forwarding rule: `ip nat inside source static tcp 10.0.0.10 80 interface GigabitEthernet0/0 80`."",
+    ""Verify the rule with `show ip nat static` and confirm a translation entry appears."",
+    ""Test external connectivity to the public IP on port 80 to ensure the web server is reachable.""
+  ]
+}",Approved,
+28,Wireless clients connect to the AP but cannot reach the network,Wireless,High,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No ACL evidence detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": true, ""message"": ""No obvious wireless failure detected."", ""evidence"": []}]","{
+  ""root_cause"": ""AP switch port is mapped to the wrong VLAN (VLAN 10 instead of VLAN 30)"",
+  ""confidence"": 0.92,
+  ""osi_layer"": ""Layer 2"",
+  ""evidence"": [
+    ""show vlan brief indicates VLAN 30 is active"",
+    ""AP switch port is assigned to VLAN 10"",
+    ""Wireless clients are configured to use VLAN 30""
+  ],
+  ""next_command"": ""show interfaces <ap_port> switchport"",
+  ""fix_steps"": [
+    ""Identify the AP port on the switch (e.g., Fa0/1)"",
+    ""Configure the port as an access port in VLAN 30: `interface <ap_port>` then `switchport mode access` and `switchport access vlan 30`"",
+    ""Verify the port VLAN assignment with `show interfaces <ap_port> switchport`"",
+    ""Test wireless client connectivity again to confirm access to the network""
+  ]
+}",Approved,
+29,Wireless clients repeatedly disconnect,Wireless,Medium,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No ACL evidence detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": false, ""message"": ""Wireless clients are experiencing authentication failures."", ""evidence"": []}]","{
+  ""root_cause"": ""Wireless security credentials (WPA2 passphrase) do not match between the access point and the clients, causing repeated authentication failures and disconnections."",
+  ""confidence"": 0.9,
+  ""osi_layer"": ""Layer 2"",
+  ""evidence"": [
+    ""\""Client authentication failures: repeated\"""",
+    ""\""Configured key differs from client key\"""",
+    ""Deterministic rule-checker wireless check failed""
+  ],
+  ""next_command"": ""show wlan authentication"",
+  ""fix_steps"": [
+    ""Verify the WPA2 passphrase configured on the access point."",
+    ""Confirm that all wireless clients are using the same passphrase."",
+    ""If a mismatch is found, update the AP configuration or client settings to use the correct key."",
+    ""Reload or restart the AP if necessary to apply the new key."",
+    ""Test connectivity by reconnecting a client and ensuring it remains connected.""
+  ]
+}",Approved,
+30,Guest Wi-Fi can access internal servers,Wireless,Critical,"[{""check"": ""duplicate_ip"", ""passed"": true, ""message"": ""No explicit duplicate IP conflict detected."", ""evidence"": []}, {""check"": ""interface_status"", ""passed"": true, ""message"": ""No explicit interface-down condition detected."", ""evidence"": []}, {""check"": ""vlan"", ""passed"": true, ""message"": ""No clear VLAN assignment mismatch could be extracted."", ""evidence"": []}, {""check"": ""trunk_vlan"", ""passed"": true, ""message"": ""No explicit trunk VLAN mismatch could be extracted."", ""evidence"": []}, {""check"": ""gateway"", ""passed"": true, ""message"": ""No structured IP/gateway information was found to check."", ""evidence"": []}, {""check"": ""dhcp"", ""passed"": true, ""message"": ""No obvious DHCP failure detected."", ""evidence"": []}, {""check"": ""dns"", ""passed"": true, ""message"": ""No obvious DNS failure detected."", ""evidence"": []}, {""check"": ""routing"", ""passed"": true, ""message"": ""No obvious routing failure detected."", ""evidence"": []}, {""check"": ""acl"", ""passed"": true, ""message"": ""No explicit ACL deny detected."", ""evidence"": []}, {""check"": ""nat"", ""passed"": true, ""message"": ""No obvious NAT failure detected."", ""evidence"": []}, {""check"": ""wireless"", ""passed"": false, ""message"": ""Guest wireless traffic is explicitly permitted to internal networks."", ""evidence"": []}]","{
+  ""root_cause"": ""ACL permitting guest traffic to internal VLAN"",
+  ""confidence"": 0.9,
+  ""osi_layer"": ""Layer 3/4"",
+  ""evidence"": [
+    ""show access-lists output shows Guest-to-internal ACL: permit ip any any"",
+    ""Deterministic rule-checker wireless check indicates guest wireless traffic is explicitly permitted to internal networks""
+  ],
+  ""next_command"": ""show run interface <guest-interface>"",
+  ""fix_steps"": [
+    ""Identify the interface that carries Guest VLAN 50 traffic."",
+    ""Modify the ACL to deny traffic from Guest VLAN to Internal VLAN 10 (e.g., deny ip 10.0.0.0 0.0.0.255 any)."",
+    ""Apply the updated ACL inbound on the Guest VLAN interface."",
+    ""Verify that guests can no longer reach internal servers by attempting a ping or service access from a guest device.""
+  ]
+}",Approved,

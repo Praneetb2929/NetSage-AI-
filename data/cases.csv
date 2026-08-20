@@ -1,0 +1,111 @@
+case_id,symptom,topology_note,show_output,expected_fault,osi_layer,concept,severity
+1,PC cannot reach another device in the same VLAN,PC1 connected to SW1 access port intended for VLAN 10.,"show vlan brief
+VLAN 10: Fa0/2
+VLAN 20: Fa0/1
+PC1 is connected to Fa0/1.",PC1 access port is assigned to the wrong VLAN.,Layer 2,VLAN,High
+2,PC in VLAN 20 cannot communicate with VLAN 30,Two VLANs exist on the switch and require inter-VLAN communication.,"show interfaces trunk
+VLANs allowed on trunk: 10,20
+VLAN 30 is missing.",VLAN 30 is not allowed across the trunk.,Layer 2,VLAN,High
+3,New VLAN users have no connectivity,Access switch should contain VLAN 40 for newly connected users.,"show vlan brief
+10 active
+20 active
+30 active
+40 not present.",Required VLAN 40 is missing from the switch.,Layer 2,VLAN,High
+4,Inter-switch communication fails for one VLAN,SW1 and SW2 are connected through a trunk.,"show interfaces trunk
+Trunk: Gi0/1
+Allowed VLANs: 10,20
+Native VLAN: 99
+Required VLAN: 30.",VLAN 30 is not permitted on the trunk.,Layer 2,VLAN,High
+5,PC receives connectivity only after moving to another port,PC should use VLAN 20 on SW1.,"show interfaces switchport
+Fa0/5: access VLAN 10
+Fa0/6: access VLAN 20
+PC is connected to Fa0/5.",PC is connected to a port configured for the wrong VLAN.,Layer 2,VLAN,Medium
+6,PC can communicate locally but cannot reach remote network,PC is connected to R1 and uses a configured default gateway.,"show ip interface brief
+G0/0: 192.168.10.1 up/up
+PC gateway: 192.168.20.1",PC has an incorrect default gateway.,Layer 3,Gateway,High
+7,Multiple PCs cannot access networks outside their subnet,Users are in subnet 192.168.10.0/24.,"PC gateway: 192.168.11.1
+PC IP: 192.168.10.25/24",Gateway is outside the PC's local subnet.,Layer 3,Gateway,High
+8,PC can ping another local host but not the router,PC and router interface should share the same subnet.,"PC: 10.0.1.20/24
+Gateway: 10.0.2.1
+Router G0/0: 10.0.1.1/24",Configured gateway does not match the router interface subnet.,Layer 3,Gateway,High
+9,One workstation cannot reach the internet while others can,All workstations use the same access network.,"PC gateway: 192.168.1.254
+Other PCs gateway: 192.168.1.1
+Router LAN: 192.168.1.1/24",The affected workstation has a wrong gateway.,Layer 3,Gateway,Medium
+10,PC does not receive an IP address automatically,PC is connected to a subnet served by DHCP.,"show ip dhcp binding
+Bindings: none
+show ip dhcp pool
+Pool available addresses: 0",DHCP pool has no available addresses.,Layer 3,DHCP,High
+11,PC receives an APIPA address,PC should obtain an address from the network DHCP server.,"PC address: 169.254.12.20
+show ip dhcp binding
+No binding for PC.",DHCP service is not providing an address.,Layer 3,DHCP,High
+12,Only some clients receive DHCP addresses,Subnet contains several active clients.,"show ip dhcp pool
+Addresses in use: 98
+Maximum addresses: 100
+Available: 2",DHCP address pool is nearly exhausted.,Layer 3,DHCP,Medium
+13,DHCP clients receive an address but cannot reach the gateway,"DHCP server provides IP, mask and gateway information.","DHCP lease:
+IP 192.168.50.25
+Mask 255.255.255.0
+Gateway 192.168.51.1
+Router LAN 192.168.50.1",DHCP pool provides an incorrect default gateway.,Layer 3,DHCP,High
+14,Users can ping an IP address but cannot open a website by name,Clients have normal IP connectivity to the network.,"ping 8.8.8.8: success
+nslookup example.com: DNS server timeout",DNS resolution is failing.,Layer 7,DNS,Medium
+15,DNS lookup returns an incorrect server address,Clients rely on the configured DNS server.,"nslookup internal.example
+Server: 192.168.1.53
+Response: NXDOMAIN
+Configured DNS server should be 192.168.1.10.",Clients are using the wrong DNS server.,Layer 7,DNS,Medium
+16,Only internal names fail to resolve,Internet connectivity is working but internal hostnames are unavailable.,"nslookup fileserver.corp
+Server: 192.168.1.10
+Response: SERVFAIL",Internal DNS service or DNS zone is failing.,Layer 7,DNS,Medium
+17,Router cannot reach a remote subnet,R1 should communicate with network 10.20.0.0/24 through R2.,"show ip route
+10.20.0.0/24 route not present
+Connected: 10.10.0.0/24",R1 is missing a route to the remote subnet.,Layer 3,Routing,High
+18,One remote network is unreachable but other networks work,R1 has several static routes.,"show ip route
+10.20.0.0/24 via 10.10.0.2
+10.30.0.0/24 via 10.10.0.2
+10.40.0.0/24 not present",Route to 10.40.0.0/24 is missing.,Layer 3,Routing,High
+19,OSPF neighbors are not forming,R1 and R2 should establish an OSPF adjacency.,"show ip ospf neighbor
+No neighbors
+show ip interface brief
+G0/1 up/up
+R1 OSPF area: 0
+R2 OSPF area: 1",The routers are configured for different OSPF areas on the shared link.,Layer 3,Routing,High
+20,Traffic takes an unexpected path,Two routers advertise the same destination.,"show ip route 10.50.0.0
+Static route: 10.50.0.0/24 via 10.0.0.2
+OSPF route also available via 10.0.0.3",A conflicting static route is influencing path selection.,Layer 3,Routing,Medium
+21,Router interface is up but connected network is missing from routing table,R1 interface should provide access to 192.168.100.0/24.,"show ip interface brief
+G0/2: 192.168.100.1 up/up
+show ip route
+192.168.100.0/24 not shown",The interface configuration/routing state is inconsistent and the connected network is not being installed.,Layer 3,Routing,High
+22,Users can reach the gateway but cannot reach a protected server,Client VLAN should access a server VLAN through a router.,"show access-lists
+Extended ACL 101
+10.10.10.0/24 -> 10.20.20.10 DENY
+Implicit deny present.",ACL is blocking client traffic to the server.,Layer 3/4,ACL,High
+23,Only HTTP traffic is blocked while ping works,Web server should be reachable from the client network.,"show access-lists
+DENY tcp any host 10.20.20.10 eq 80
+ICMP permitted.",ACL explicitly denies HTTP traffic.,Layer 4,ACL,High
+24,Guest users cannot access the internet,Guest VLAN traffic passes through an edge router.,"show access-lists
+Guest subnet 192.168.50.0/24 denied by outbound ACL.",Outbound ACL blocks guest traffic.,Layer 3/4,ACL,High
+25,Internal PC cannot access the internet,Inside network uses private RFC1918 addresses and should be translated.,"show ip nat translations
+No translations
+show running-config
+No NAT rule for 192.168.10.0/24",Required NAT configuration is missing.,Layer 3,NAT,High
+26,Some users can access the internet but others cannot,Two internal subnets share the same router.,"show ip nat translations
+192.168.10.20 translated
+192.168.20.20 not translated
+NAT ACL matches only 192.168.10.0/24",NAT rule does not include the second internal subnet.,Layer 3,NAT,High
+27,Port forwarding to an internal web server fails,External clients should reach an internal server on TCP port 80.,"show ip nat translations
+No static mapping for TCP 80
+Internal server: 10.0.0.10:80",Required static NAT/port-forwarding rule is missing.,Layer 3/4,NAT,Medium
+28,Wireless clients connect to the AP but cannot reach the network,AP is connected to a switch and clients should join the wireless VLAN.,"show vlan brief
+VLAN 30 active
+AP switch port assigned to VLAN 10
+Wireless clients use VLAN 30.",AP switch port is mapped to the wrong VLAN.,Layer 2,Wireless,High
+29,Wireless clients repeatedly disconnect,Several clients connect to the same access point.,"show wlan summary
+SSID: CampusWiFi
+Security: WPA2
+Client authentication failures: repeated
+Configured key differs from client key.",Wireless security credentials do not match.,Layer 2,Wireless,Medium
+30,Guest Wi-Fi can access internal servers,Guest SSID should be isolated from internal network.,"show access-lists
+Guest-to-internal ACL: permit ip any any
+Guest VLAN: 50
+Internal VLAN: 10",Guest isolation policy is missing or incorrectly permits internal traffic.,Layer 3/4,Wireless,Critical
